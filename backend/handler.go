@@ -2,14 +2,57 @@ package main
 
 import (
 	"encoding/json"
+	"fmt"
+	"io"
 	"net/http"
 	"os"
-	"sync"
+	"path/filepath"
+	"strings"
 )
 
-var mtx sync.Mutex
+func uploadPDFHandler(w http.ResponseWriter, r *http.Request) {
+  if r.Method != http.MethodPost {
+    http.Error(w, "Bad Method", http.StatusInternalServerError)
+    return
+  }
 
-// List all PDFs availible
+  r.Body = http.MaxBytesReader(w, r.Body, 10<<20)
+
+  err := r.ParseMultipartForm(10 << 20)
+  if err != nil {
+      http.Error(w, "Could not parse multipart form", http.StatusBadRequest)
+      return
+  }
+
+  file, fileHeader, err := r.FormFile("pdf")
+  if err != nil {
+      http.Error(w, "File not found in form", http.StatusBadRequest)
+      return
+  }
+  defer file.Close()
+
+  if !strings.HasSuffix(fileHeader.Filename, ".pdf") {
+      http.Error(w, "Only .pdf files allowed", http.StatusBadRequest)
+      return
+  }
+
+  dstPath := filepath.Join(uploadDir, fileHeader.Filename)
+  out, err := os.Create(dstPath)
+  if err != nil {
+      http.Error(w, "Could not save file", http.StatusInternalServerError)
+      return
+  }
+  defer out.Close()
+
+  _, err = io.Copy(out, file)
+  if err != nil {
+      http.Error(w, "Failed to write file", http.StatusInternalServerError)
+      return
+  }
+
+  fmt.Fprintf(w, "Uploaded: %s\n", fileHeader.Filename)
+}
+
 func getPDFListHandler(w http.ResponseWriter, r *http.Request) {
   if r.Method != http.MethodGet {
     http.Error(w, "Method not allowed", http.StatusMethodNotAllowed)
