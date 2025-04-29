@@ -9,7 +9,9 @@ function App() {
   return (
     <Router>
       <div>
-        <Route path="/" element={<DownloadPage />} />
+        <Routes>
+          <Route path="/" element={<DownloadPage />} />
+        </Routes>
       </div>
     </Router>
   );
