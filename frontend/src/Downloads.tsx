@@ -7,7 +7,7 @@ interface PdfSearchResult {
   downloadUrl: string;
 }
 
-const SearchBar: React.FC = () => {
+const DownloadPage: React.FC = () => {
   const [query, setQuery] = useState<string>('');
   const [results, setResults] = useState<PdfSearchResult[]>([]);
   const [loading, setLoading] = useState<boolean>(false);
@@ -66,5 +66,5 @@ const SearchBar: React.FC = () => {
   );
 };
 
-export default SearchBar;
+export default DownloadPage;
 
