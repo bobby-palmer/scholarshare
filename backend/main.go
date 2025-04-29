@@ -17,5 +17,9 @@ func init() {
 }
 
 func main() {
+  http.HandleFunc("/upload", uploadPDFHandler)
+  http.HandleFunc("/download", downloadPDFHandler)
+  http.HandleFunc("/ls", getPDFListHandler)
+
   http.ListenAndServe(":" + port, nil)
 }
