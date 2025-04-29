@@ -7,7 +7,6 @@ import (
 	"net/http"
 	"os"
 	"path/filepath"
-	"strings"
 )
 
 func uploadPDFHandler(w http.ResponseWriter, r *http.Request) {
@@ -31,9 +30,8 @@ func uploadPDFHandler(w http.ResponseWriter, r *http.Request) {
   }
   defer file.Close()
 
-  if !strings.HasSuffix(fileHeader.Filename, ".pdf") {
-      http.Error(w, "Only .pdf files allowed", http.StatusBadRequest)
-      return
+  if !validateFile(file, fileHeader) {
+    http.Error(w, "Could not validate uploaded exam", http.StatusBadRequest)
   }
 
   dstPath := filepath.Join(uploadDir, fileHeader.Filename)
