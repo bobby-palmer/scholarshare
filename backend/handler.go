@@ -9,14 +9,6 @@ import (
 
 var mtx sync.Mutex
 
-func uploadPDFHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
-func downloadPDFHandler(w http.ResponseWriter, r *http.Request) {
-
-}
-
 // List all PDFs availible
 func getPDFListHandler(w http.ResponseWriter, r *http.Request) {
   if r.Method != http.MethodGet {
@@ -24,9 +16,7 @@ func getPDFListHandler(w http.ResponseWriter, r *http.Request) {
     return
   }
 
-  mtx.Lock()
   files, err := os.ReadDir(uploadDir)
-  mtx.Unlock()
 
   if err != nil {
     http.Error(w, "Fail to read pdfs", http.StatusInternalServerError)
